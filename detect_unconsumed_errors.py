@@ -28,7 +28,6 @@ ap.add_argument(
     help="Exclude if blocks which contains a line matching the pattern. Multiple exclude patterns can be specified.",
 )
 args = ap.parse_args()
-print(args)
 excludes: List[regex.Regex] = [regex.compile(r) for r in args.exclude]
 
 stmt_if = regex.compile("""^\\W*if +err +!= +nil +\\{\\W*$""")
