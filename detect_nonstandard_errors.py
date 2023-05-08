@@ -50,5 +50,3 @@ if __name__ == "__main__":
     fs = traverse(args.dir)
     for f in fs:
         do(f)
-
-

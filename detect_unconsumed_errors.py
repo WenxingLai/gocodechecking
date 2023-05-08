@@ -31,16 +31,18 @@ args = ap.parse_args()
 excludes: List[regex.Regex] = [regex.compile(r) for r in args.exclude]
 
 stmt_if = regex.compile("""^\\W*if +err +!= +nil +\\{\\W*$""")
-valid_stmts = [
-                  regex.compile("""log.*err"""),
-                  regex.compile("""[pP]rint.*err"""),
-                  regex.compile("""Errorf.*err"""),
-                  regex.compile("""^\\W*return [a-zA-Z0-9, ]*err"""),
-                  regex.compile("""^\\W*panic.*err"""),
-                  regex.compile("""^\\W*os.Exit\\([0-9]+\\)"""),
-                  regex.compile("""//nolint:.*nilerr"""),
-                  regex.compile("""//nolint:.*unconsumederr""")
-              ] + [regex.compile(r) for r in args.exclude_block_pattern] if args.exclude_block_pattern else []
+builtin_stmts = [
+    regex.compile("""log.*err"""),
+    regex.compile("""[pP]rint.*err"""),
+    regex.compile("""Errorf.*err"""),
+    regex.compile("""^\\W*return [a-zA-Z0-9, ]*err"""),
+    regex.compile("""^\\W*panic.*err"""),
+    regex.compile("""^\\W*os.Exit\\([0-9]+\\)"""),
+    regex.compile("""//nolint:.*nilerr"""),
+    regex.compile("""//nolint:.*unconsumederr"""),
+]
+user_stmts = [regex.compile(r) for r in args.exclude_block_pattern] if args.exclude_block_pattern else []
+valid_stmts = builtin_stmts + user_stmts
 
 
 def has_unconsumed_error(lines: List[str]) -> bool:
