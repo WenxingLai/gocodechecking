@@ -12,7 +12,7 @@ ap = argparse.ArgumentParser(
     "detect_unconsumed_errors.py",
     "./detect_unconsumed_errors.py dir",
     "This detects errors unreturned and not logged. Warnings can be ignored by '//nolint:unconsumederr'.",
-    "Example: ./detect_unconsumed_errors.py -E 'vendor/.*' -X 'Msg.*err'",
+    "Example: ./detect_unconsumed_errors.py dir -E 'vendor/.*' -X 'Msg.*err'",
 )
 ap.add_argument("dir", help="Dir containing go files")
 ap.add_argument(
