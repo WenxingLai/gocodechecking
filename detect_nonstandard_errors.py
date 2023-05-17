@@ -26,12 +26,22 @@ ap.add_argument(
 args = ap.parse_args()
 excludes = [regex.compile(r) for r in args.exclude]
 
+valid_stmts = [
+    regex.compile(regex.compile("""//nolint:.*standarderr"""),)
+]
 
 def do(filepath: str):
-    cmd = ["grep", "-rnEH", "'err\\W+!=\\W+nil\\W+[|&]{2}'", filepath]
-    result = subprocess.run(" ".join(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    msg = result.stdout.decode("utf-8").rstrip()
-    if msg:
+    cmds = [
+        ["grep", "-rnEH", "'^\\s+if +[a-zA-Z]?[eE]rr\\W+!=\\W+nil\\W+[|&]{2}'", filepath],
+        ["grep", "-rnEH", "'^\\s+if +[a-zA-Z]?[eE]rr\\W+=='", filepath],
+    ]
+    for cmd in cmds:
+        result = subprocess.run(" ".join(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        msg = result.stdout.decode("utf-8").rstrip()
+        if not msg:
+            continue
+        if any(r.search(msg) for r in valid_stmts):
+            continue
         print(msg)
 
 

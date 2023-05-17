@@ -12,7 +12,7 @@ ap = argparse.ArgumentParser(
     "detect_unconsumed_errors.py",
     "./detect_unconsumed_errors.py dir",
     "This detects errors unreturned and not logged. Warnings can be ignored by '//nolint:unconsumederr'.",
-    "Example: ./detect_unconsumed_errors.py dir -E 'vendor/.*' -X 'Msg.*err'",
+    "Example: ./detect_unconsumed_errors.py dir -E 'vendor/.*' -E '.*test.go' -X 'Msg.*err'",
 )
 ap.add_argument("dir", help="Dir containing go files")
 ap.add_argument(
@@ -30,13 +30,13 @@ ap.add_argument(
 args = ap.parse_args()
 excludes: List[regex.Regex] = [regex.compile(r) for r in args.exclude]
 
-stmt_if = regex.compile("""^\\W*if +err +!= +nil +\\{\\W*$""")
+stmt_if = regex.compile("""^\\s*if +[a-zA-Z]?err +!= +nil +\\{\\W*$""")
 builtin_stmts = [
-    regex.compile("""log.*err"""),
-    regex.compile("""[pP]rint.*err"""),
-    regex.compile("""Errorf.*err"""),
-    regex.compile("""^\\W*return [a-zA-Z0-9, ]*err"""),
-    regex.compile("""^\\W*panic.*err"""),
+    regex.compile("""log.*[Ee]rr"""),
+    regex.compile("""[pP]rint.*[Ee]rr"""),
+    regex.compile("""Errorf.*[Ee]rr"""),
+    regex.compile("""^\\W*return [a-zA-Z0-9, "]*[Ee]rr"""),
+    regex.compile("""^\\W*panic.*[Ee]rr"""),
     regex.compile("""^\\W*os.Exit\\([0-9]+\\)"""),
     regex.compile("""//nolint:.*nilerr"""),
     regex.compile("""//nolint:.*unconsumederr"""),
@@ -95,7 +95,7 @@ def traverse(dir) -> List[str]:
     for root, _, files in os.walk(dir):
         for f in files:
             filepath = os.path.join(root, f)
-            if os.path.splitext(filepath)[-1] != ".go" or any([i.search(filepath) for i in excludes]):
+            if os.path.splitext(filepath)[-1] != ".go" or any(i.search(filepath) for i in excludes):
                 continue
             ret.append(filepath)
     return ret
