@@ -30,6 +30,7 @@ valid_stmts = [
     regex.compile(regex.compile("""//nolint:.*standarderr"""),)
 ]
 
+
 def do(filepath: str):
     cmds = [
         ["grep", "-rnEH", "'^\\s+if +[a-zA-Z]?[eE]rr\\W+!=\\W+nil\\W+[|&]{2}'", filepath],

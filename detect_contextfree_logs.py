@@ -4,7 +4,7 @@
 import argparse
 import os
 import sys
-from typing import List, Tuple
+from typing import List
 
 import regex
 
